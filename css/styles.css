@@ -69,6 +69,12 @@ p { margin: 0; }
 .btn-primary:hover { filter: brightness(1.06); background: var(--accent); }
 .btn-ghost { background: transparent; }
 .btn-icon { padding: 0.55rem 0.7rem; font-size: 1rem; }
+.btn-label { font-weight: 700; }
+.diag {
+  font-size: 0.68rem; color: var(--muted); text-align: center;
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace; line-height: 1.45;
+  word-break: break-all;
+}
 .btn-block { width: 100%; margin-top: 0.5rem; }
 .btn-warn { background: rgba(251, 191, 36, 0.15); border-color: rgba(251, 191, 36, 0.4); color: var(--warn); }
 .btn-warn:hover { background: rgba(251, 191, 36, 0.25); }
@@ -224,14 +230,26 @@ p { margin: 0; }
 
 @media (max-width: 880px) {
   .layout { grid-template-columns: 1fr; height: auto; }
-  .map-wrap { height: 48vh; order: -1; }
+  .map-wrap { height: 54vh; order: -1; }
   .panel { overflow: visible; }
   .brand-text small { display: none; }
+  .card { padding: 0.9rem 0.95rem; }
 }
 
 @media (max-width: 560px) {
+  .topbar { padding: 0.55rem 0.7rem; gap: 0.5rem; }
+  .brand-text { display: none; }
+  .brand-logo { width: 38px; height: 38px; border-radius: 11px; font-size: 1.15rem; }
+  .top-actions { gap: 0.4rem; }
+  .top-actions .btn .btn-label { display: none; }
+  .top-actions .btn { padding: 0.5rem 0.6rem; }
   .net-pill #netText { display: none; }
-  .metrics { grid-template-columns: 1fr 1fr; }
-  .actions { grid-template-columns: 1fr; }
+  .net-pill { padding: 0.3rem 0.55rem; }
+  .actions { grid-template-columns: 1fr 1fr; }
   #fitBoth { grid-column: auto; }
+  .actions .btn { min-height: 44px; }
+  .metrics dd { font-size: 0.82rem; }
+  .distance-value { font-size: 1.7rem; }
+  .route-row { gap: 0.7rem; font-size: 0.8rem; }
+  .map-legend { font-size: 0.7rem; padding: 0.32rem 0.6rem; }
 }
