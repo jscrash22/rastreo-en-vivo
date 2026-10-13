@@ -26,8 +26,8 @@
     <div class="brand">
       <span class="brand-logo">📍</span>
       <div class="brand-text">
-        <strong>Rastreo en Vivo</strong>
-        <small>ubicación GPS cada segundo</small>
+        <strong>Monitor 👀</strong>
+        <small>vigila a quien sale</small>
       </div>
     </div>
 
@@ -47,9 +47,9 @@
     <section class="panel">
       <article class="card card-self">
         <div class="card-head">
-          <span class="avatar" id="selfAvatar">🧑</span>
+          <span class="avatar" id="selfAvatar">🏠</span>
           <div>
-            <h2 id="selfName">Tú</h2>
+            <h2 id="selfName">Tu base</h2>
             <p class="muted" id="selfStatus">Esperando GPS…</p>
           </div>
         </div>
@@ -62,10 +62,10 @@
 
       <article class="card card-peer" id="peerCard">
         <div class="card-head">
-          <span class="avatar peer" id="peerAvatar">❤️</span>
+          <span class="avatar peer" id="peerAvatar">🚶</span>
           <div>
-            <h2 id="peerName">Tu pareja</h2>
-            <p class="muted" id="peerStatus">Sin señal todavía…</p>
+            <h2 id="peerName">Invitado</h2>
+            <p class="muted" id="peerStatus">Esperando al invitado…</p>
           </div>
         </div>
         <dl class="metrics">
@@ -76,9 +76,9 @@
       </article>
 
       <article class="card card-distance">
-        <span class="distance-label">Distancia entre ustedes</span>
+        <span class="distance-label">Distancia del invitado a tu base</span>
         <strong class="distance-value" id="distanceValue">—</strong>
-        <span class="muted" id="distanceHint">Conecten ambos para medir la distancia.</span>
+        <span class="muted" id="distanceHint">Esperando la ubicación del invitado…</span>
         <div class="route-row" id="routeRow" hidden>
           <span>🧭 Ruta: <b id="routeKm">—</b></span>
           <span>⏱ ETA: <b id="routeEta">—</b></span>
@@ -88,14 +88,14 @@
       <article class="card card-alert">
         <div class="alert-text">
           <strong>Alertas</strong>
-          <span class="muted">Recibe un aviso cuando estén a menos de 150 m.</span>
+          <span class="muted">Avisa cuando el invitado esté a menos de 150 m de tu base.</span>
         </div>
         <button id="nearBtn" class="btn">🔕 Aviso de cercanía: NO</button>
       </article>
 
       <div class="actions">
-        <button id="centerSelf" class="btn btn-primary">📍 Centrarme</button>
-        <button id="followPeer" class="btn">❤️ Seguir a pareja</button>
+        <button id="centerSelf" class="btn btn-primary">🏠 Centrar en base</button>
+        <button id="followPeer" class="btn">🚶 Seguir invitado</button>
         <button id="fitBoth" class="btn btn-ghost">🔭 Ver a ambos</button>
       </div>
 
@@ -113,10 +113,10 @@
 
   <div id="setupModal" class="modal" hidden>
     <div class="modal-card">
-      <h2>Configura tu rastreo</h2>
+      <h2>Modo monitor 👀</h2>
       <p class="muted">
-        Creen una <strong>sala</strong> con el mismo código y compartan el enlace.
-        Cada uno verá al otro en el mapa en tiempo real.
+        Este teléfono <strong>vigila</strong>. Genera un código, envíale el enlace a
+        quien va a salir, y verás su ubicación en vivo en el mapa.
       </p>
 
       <form id="setupForm" class="form">
@@ -138,12 +138,12 @@
           <small class="muted">Pega la URL de tu Realtime Database para guardar los recorridos. Sin esto, solo funciona en vivo.</small>
           <button type="button" id="testFb" class="btn btn-ghost">Probar conexión</button>
         </div>
-        <button type="submit" class="btn btn-primary btn-block">Empezar a compartir</button>
+        <button type="submit" class="btn btn-primary btn-block">Empezar a vigilar</button>
       </form>
 
       <p class="privacy">
-        🔒 Tu ubicación solo se comparte dentro de la sala acordada. Puedes detenerla
-        cerrando la pestaña. Úsala siempre con consentimiento.
+        🔒 El invitado solo ve su propia ubicación; tú ves la suya dentro de la sala.
+        Úsala siempre con consentimiento.
       </p>
     </div>
   </div>
@@ -159,10 +159,7 @@
           <input id="histDate" type="date" />
         </label>
         <label class="hist-check">
-          <input id="histMine" type="checkbox" checked /> Ver mi recorrido
-        </label>
-        <label class="hist-check">
-          <input id="histPeer" type="checkbox" checked /> Ver recorrido de mi pareja
+          <input id="histMine" type="checkbox" checked /> Ver recorrido del invitado
         </label>
       </div>
 
@@ -182,6 +179,6 @@
 
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
   <script src="https://unpkg.com/mqtt@5.10.1/dist/mqtt.min.js"></script>
-  <script type="module" src="js/app.js"></script>
+  <script type="module" src="js/monitor.js"></script>
 </body>
 </html>
