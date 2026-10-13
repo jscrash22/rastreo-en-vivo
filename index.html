@@ -32,6 +32,7 @@
     </div>
 
     <div class="top-actions">
+      <button id="historyBtn" class="btn btn-ghost" title="Ver recorridos guardados">🕓 Historial</button>
       <button id="shareBtn" class="btn btn-ghost" title="Copiar enlace de la sala">🔗 Invitar</button>
       <button id="reconnectBtn" class="btn btn-warn" hidden title="Volver a conectar">↻ Reconectar</button>
       <span id="wakeBadge" class="wake-badge" hidden title="Pantalla y GPS activos">🔆</span>
@@ -128,6 +129,13 @@
             <button type="button" id="genSala" class="btn btn-ghost">🎲 Generar</button>
           </div>
         </div>
+        <div class="field">
+          <label for="inpFirebase">Firebase (opcional · para guardar historial)</label>
+          <input id="inpFirebase" name="firebase" type="url" spellcheck="false"
+            placeholder="https://tu-proyecto-default-rtdb.firebaseio.com" />
+          <small class="muted">Pega la URL de tu Realtime Database para guardar los recorridos. Sin esto, solo funciona en vivo.</small>
+          <button type="button" id="testFb" class="btn btn-ghost">Probar conexión</button>
+        </div>
         <button type="submit" class="btn btn-primary btn-block">Empezar a compartir</button>
       </form>
 
@@ -135,6 +143,38 @@
         🔒 Tu ubicación solo se comparte dentro de la sala acordada. Puedes detenerla
         cerrando la pestaña. Úsala siempre con consentimiento.
       </p>
+    </div>
+  </div>
+
+  <div id="historyModal" class="modal" hidden>
+    <div class="modal-card modal-wide">
+      <h2>🕓 Historial de recorridos</h2>
+      <p class="muted">Elige un día para ver por dónde anduvieron (los puntos se guardan cada 30 s).</p>
+
+      <div class="hist-controls">
+        <label class="field">
+          <span>Día</span>
+          <input id="histDate" type="date" />
+        </label>
+        <label class="hist-check">
+          <input id="histMine" type="checkbox" checked /> Ver mi recorrido
+        </label>
+        <label class="hist-check">
+          <input id="histPeer" type="checkbox" checked /> Ver recorrido de mi pareja
+        </label>
+      </div>
+
+      <div class="hist-actions">
+        <button id="histView" class="btn btn-primary">Ver en el mapa</button>
+        <button id="histToday" class="btn btn-ghost">Hoy</button>
+        <button id="histDelete" class="btn btn-danger">Borrar día</button>
+      </div>
+
+      <p class="hist-stats" id="histStats">Sin datos cargados.</p>
+      <div class="hist-list" id="histList"></div>
+
+      <button id="histClose" class="btn btn-block">Cerrar</button>
+      <p class="privacy" id="histHint"></p>
     </div>
   </div>
 
