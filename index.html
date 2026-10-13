@@ -32,9 +32,9 @@
     </div>
 
     <div class="top-actions">
-      <button id="historyBtn" class="btn btn-ghost" title="Ver recorridos guardados">🕓 Historial</button>
-      <button id="shareBtn" class="btn btn-ghost" title="Copiar enlace de la sala">🔗 Invitar</button>
-      <button id="reconnectBtn" class="btn btn-warn" hidden title="Volver a conectar">↻ Reconectar</button>
+      <button id="historyBtn" class="btn btn-ghost" title="Ver recorridos guardados">🕓<span class="btn-label"> Historial</span></button>
+      <button id="shareBtn" class="btn btn-ghost" title="Copiar enlace de la sala">🔗<span class="btn-label"> Invitar</span></button>
+      <button id="reconnectBtn" class="btn btn-warn" hidden title="Volver a conectar">↻<span class="btn-label"> Reconectar</span></button>
       <span id="wakeBadge" class="wake-badge" hidden title="Pantalla y GPS activos">🔆</span>
       <span id="netPill" class="net-pill is-wait">
         <span class="net-dot"></span><span id="netText">Conectando…</span>
@@ -98,6 +98,8 @@
         <button id="followPeer" class="btn">❤️ Seguir a pareja</button>
         <button id="fitBoth" class="btn btn-ghost">🔭 Ver a ambos</button>
       </div>
+
+      <p class="diag" id="diag"></p>
     </section>
 
     <div class="map-wrap">
