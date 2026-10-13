@@ -75,6 +75,8 @@ export class Realtime {
 
     this.topicHash = topicHash;
     this.base = `${CONFIG.topicBase}/${topicHash}`;
+    const plainRoom = String(sala).toLowerCase().replace(/[^a-z0-9]/g, "");
+    this.legacyBase = `${CONFIG.topicBase}/${plainRoom}`;
     this.selfTopic = `${this.base}/${id}`;
     this.setState("connecting");
 
@@ -96,6 +98,7 @@ export class Realtime {
 
     this.client.on("connect", () => {
       this.client.subscribe(`${this.base}/+`, { qos: 1 });
+      if (this.legacyBase !== this.base) this.client.subscribe(`${this.legacyBase}/+`, { qos: 1 });
       this.publishPresence(true);
       if (this.lastSample) this.publishLocation(this.lastSample);
       this.setState("connected");
