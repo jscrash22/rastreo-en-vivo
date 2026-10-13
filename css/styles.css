@@ -70,6 +70,15 @@ p { margin: 0; }
 .btn-ghost { background: transparent; }
 .btn-icon { padding: 0.55rem 0.7rem; font-size: 1rem; }
 .btn-block { width: 100%; margin-top: 0.5rem; }
+.btn-warn { background: rgba(251, 191, 36, 0.15); border-color: rgba(251, 191, 36, 0.4); color: var(--warn); }
+.btn-warn:hover { background: rgba(251, 191, 36, 0.25); }
+
+.wake-badge {
+  display: grid; place-items: center; width: 34px; height: 34px; border-radius: 999px;
+  font-size: 0.95rem; background: rgba(52, 211, 153, 0.14); border: 1px solid rgba(52, 211, 153, 0.4);
+  animation: pulse 2s ease-in-out infinite;
+}
+@keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.55; } }
 
 .net-pill {
   display: inline-flex; align-items: center; gap: 0.45rem;
@@ -119,6 +128,13 @@ p { margin: 0; }
 }
 .distance-label { font-size: 0.74rem; text-transform: uppercase; letter-spacing: 0.06em; color: var(--muted); }
 .distance-value { font-size: 2rem; font-weight: 800; background: var(--accent); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; }
+.route-row { display: flex; justify-content: center; gap: 1.1rem; margin-top: 0.5rem; font-size: 0.85rem; }
+.route-row b { color: var(--text); }
+
+.card-alert { display: flex; flex-direction: column; gap: 0.7rem; }
+.alert-text { display: flex; flex-direction: column; gap: 0.1rem; }
+.card-alert #nearBtn { width: 100%; }
+.card-alert #nearBtn.is-on { background: rgba(52, 211, 153, 0.18); border-color: rgba(52, 211, 153, 0.5); color: var(--ok); }
 
 .actions { display: grid; grid-template-columns: 1fr 1fr; gap: 0.55rem; }
 .actions .btn { padding: 0.65rem 0.8rem; }
