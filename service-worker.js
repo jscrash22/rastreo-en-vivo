@@ -1,4 +1,4 @@
-const VERSION = "rastreo-v1.0.0";
+const VERSION = "rastreo-v1.1.0";
 const STATIC_CACHE = `${VERSION}-static`;
 const RUNTIME_CACHE = `${VERSION}-runtime`;
 
