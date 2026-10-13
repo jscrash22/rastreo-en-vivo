@@ -1,4 +1,4 @@
-const VERSION = "rastreo-v1.3.0";
+const VERSION = "rastreo-v1.4.0";
 const STATIC_CACHE = `${VERSION}-static`;
 const RUNTIME_CACHE = `${VERSION}-runtime`;
 
@@ -12,6 +12,7 @@ const APP_SHELL = [
   "./js/realtime.js",
   "./js/secure.js",
   "./js/route.js",
+  "./js/history.js",
   "./js/geo.js",
   "./js/map.js",
   "./icons/icon.svg",
@@ -95,7 +96,8 @@ self.addEventListener("fetch", (event) => {
   }
 
   if (mismoOrigen) {
-    event.respondWith(cachePrimero(request, STATIC_CACHE));
+    const fresco = /\.(?:js|css|json|html|webmanifest)$/i.test(url.pathname) || url.pathname.endsWith("/");
+    event.respondWith(fresco ? redPrimero(request, STATIC_CACHE) : cachePrimero(request, STATIC_CACHE));
     return;
   }
 
