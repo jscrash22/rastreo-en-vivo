@@ -61,7 +61,7 @@ export class Realtime {
     });
 
     this.client.on("connect", () => {
-      this.client.subscribe(`${this.base}/+`, { qos: 0 });
+      this.client.subscribe(`${this.base}/+`, { qos: 1 });
       this.publishPresence(true);
       this.emitStatus();
       this.emitMessage({ type: "connected" });
@@ -117,7 +117,7 @@ export class Realtime {
 
   publish(payload) {
     if (!this.client) return;
-    this.client.publish(this.selfTopic, JSON.stringify(payload), { qos: 0, retain: true });
+    this.client.publish(this.selfTopic, JSON.stringify(payload), { qos: 1, retain: true });
   }
 
   startStaleWatch() {
