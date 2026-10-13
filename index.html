@@ -33,6 +33,8 @@
 
     <div class="top-actions">
       <button id="shareBtn" class="btn btn-ghost" title="Copiar enlace de la sala">🔗 Invitar</button>
+      <button id="reconnectBtn" class="btn btn-warn" hidden title="Volver a conectar">↻ Reconectar</button>
+      <span id="wakeBadge" class="wake-badge" hidden title="Pantalla y GPS activos">🔆</span>
       <span id="netPill" class="net-pill is-wait">
         <span class="net-dot"></span><span id="netText">Conectando…</span>
       </span>
@@ -76,6 +78,18 @@
         <span class="distance-label">Distancia entre ustedes</span>
         <strong class="distance-value" id="distanceValue">—</strong>
         <span class="muted" id="distanceHint">Conecten ambos para medir la distancia.</span>
+        <div class="route-row" id="routeRow" hidden>
+          <span>🧭 Ruta: <b id="routeKm">—</b></span>
+          <span>⏱ ETA: <b id="routeEta">—</b></span>
+        </div>
+      </article>
+
+      <article class="card card-alert">
+        <div class="alert-text">
+          <strong>Alertas</strong>
+          <span class="muted">Recibe un aviso cuando estén a menos de 150 m.</span>
+        </div>
+        <button id="nearBtn" class="btn">🔕 Aviso de cercanía: NO</button>
       </article>
 
       <div class="actions">
