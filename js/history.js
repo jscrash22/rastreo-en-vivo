@@ -82,8 +82,8 @@ export async function testConnection() {
   const base = firebaseUrl();
   if (!base) return { ok: false, message: "Sin URL configurada." };
   try {
-    await put("rastreo_ping", JSON.stringify({ ts: Date.now() }));
-    const back = await get("rastreo_ping");
+    await put("historial/_ping", JSON.stringify({ ts: Date.now() }));
+    const back = await get("historial/_ping");
     if (!back || typeof back.ts !== "number") return { ok: false, message: "Respuesta inesperada." };
     return { ok: true, message: "Conexión correcta ✅" };
   } catch (err) {
