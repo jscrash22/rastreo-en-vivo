@@ -19,23 +19,10 @@ export class MapView {
 
     L.control.zoom({ position: "bottomright" }).addTo(this.map);
 
-    const layers = {};
-    CONFIG.mapStyles.forEach((style, index) => {
-      const layer = L.tileLayer(style.url, {
-        maxZoom: style.maxZoom,
-        attribution: style.attribution,
-        detectRetina: true,
-      });
-      layers[style.nombre] = layer;
-      if (index === 0) layer.addTo(this.map);
-    });
-
-    L.control
-      .layers(layers, null, { position: "topright", collapsed: true })
-      .addTo(this.map);
-
-    this.map.on("zoomstart", () => this.map.getContainer().classList.add("is-zooming"));
-    this.map.on("zoomend", () => this.map.getContainer().classList.remove("is-zooming"));
+    L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+      maxZoom: 19,
+      attribution: "&copy; OpenStreetMap",
+    }).addTo(this.map);
 
     this.selfMarker = null;
     this.peerMarker = null;
