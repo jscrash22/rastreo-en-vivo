@@ -1,17 +1,29 @@
 import { CONFIG } from "./config.js";
 import { uid } from "./utils.js";
+import { deriveSala, encryptPayload, decryptPayload, cryptoReady } from "./secure.js";
+
+const STATE_TEXT = {
+  connecting: "Conectando…",
+  connected: "En vivo",
+  reconnecting: "Reconectando…",
+  offline: "Sin red",
+  error: "Error de red",
+};
 
 export class Realtime {
   constructor() {
     this.client = null;
     this.base = null;
     this.selfTopic = null;
+    this.key = null;
     this.me = null;
     this.sala = null;
     this.lastPeer = null;
+    this.lastSample = null;
     this.watchTimer = null;
     this.messageHandlers = new Set();
     this.statusHandlers = new Set();
+    this.state = "connecting";
   }
 
   onMessage(handler) {
@@ -25,7 +37,10 @@ export class Realtime {
 
   status() {
     return {
-      connected: Boolean(this.client?.connected),
+      state: this.state,
+      text: STATE_TEXT[this.state] || this.state,
+      connected: this.state === "connected",
+      encrypted: Boolean(this.key),
       sala: this.sala,
       id: this.me?.id || null,
     };
@@ -35,55 +50,71 @@ export class Realtime {
     this.messageHandlers.forEach((handler) => handler(payload));
   }
 
-  emitStatus() {
+  setState(state) {
+    if (this.state === state) return;
+    this.state = state;
     const current = this.status();
     this.statusHandlers.forEach((handler) => handler(current));
   }
 
-  connect({ sala, id, nombre }) {
+  async connect({ sala, id, nombre }) {
     this.sala = sala;
     this.me = { id, nombre };
-    this.base = `${CONFIG.topicBase}/${sala}`;
+    this.key = null;
+
+    let topicHash = sala.toLowerCase();
+    if (cryptoReady) {
+      try {
+        const derived = await deriveSala(sala);
+        topicHash = derived.topicHash;
+        this.key = derived.key;
+      } catch (err) {
+        console.warn("Sin cifrado:", err);
+      }
+    }
+
+    this.base = `${CONFIG.topicBase}/${topicHash}`;
     this.selfTopic = `${this.base}/${id}`;
+    this.setState("connecting");
+
+    const willPayload = await encryptPayload(this.key, {
+      id,
+      nombre,
+      online: false,
+      ts: Date.now(),
+    });
 
     this.client = mqtt.connect(CONFIG.brokerUrl, {
       clientId: `rastreo-${id}-${uid(4)}`,
       clean: true,
       keepalive: 30,
-      reconnectPeriod: 2000,
+      reconnectPeriod: 2500,
       connectTimeout: 15000,
-      will: {
-        topic: this.selfTopic,
-        payload: JSON.stringify({ id, nombre, online: false, ts: Date.now() }),
-        qos: 1,
-        retain: true,
-      },
+      will: { topic: this.selfTopic, payload: willPayload, qos: 1, retain: true },
     });
 
     this.client.on("connect", () => {
       this.client.subscribe(`${this.base}/+`, { qos: 1 });
       this.publishPresence(true);
-      this.emitStatus();
+      if (this.lastSample) this.publishLocation(this.lastSample);
+      this.setState("connected");
       this.emitMessage({ type: "connected" });
     });
 
-    this.client.on("reconnect", () => this.emitStatus());
-    this.client.on("close", () => this.emitStatus());
-    this.client.on("offline", () => this.emitStatus());
+    this.client.on("reconnect", () => this.setState("reconnecting"));
+    this.client.on("close", () => {
+      if (this.state === "connected") this.setState("reconnecting");
+    });
+    this.client.on("offline", () => this.setState("offline"));
     this.client.on("error", (err) => {
       console.warn("MQTT error", err);
-      this.emitStatus();
+      this.setState("error");
     });
 
-    this.client.on("message", (topic, buffer) => {
+    this.client.on("message", async (topic, buffer) => {
       if (topic === this.selfTopic) return;
-      let data;
-      try {
-        data = JSON.parse(buffer.toString());
-      } catch {
-        return;
-      }
-      if (!data || data.id === id) return;
+      const data = await decryptPayload(this.key, buffer.toString());
+      if (!data || typeof data !== "object" || data.id === id) return;
       this.lastPeer = data;
       this.emitMessage({ type: "peer", data });
     });
@@ -92,32 +123,44 @@ export class Realtime {
     return this;
   }
 
-  publishPresence(online) {
-    this.publish({
-      id: this.me.id,
-      nombre: this.me.nombre,
-      online,
-      ts: Date.now(),
-    });
+  async publishPresence(online) {
+    this.publish(
+      await encryptPayload(this.key, {
+        id: this.me.id,
+        nombre: this.me.nombre,
+        online,
+        ts: Date.now(),
+      })
+    );
   }
 
-  publishLocation(sample) {
-    this.publish({
-      id: this.me.id,
-      nombre: this.me.nombre,
-      online: true,
-      lat: sample.lat,
-      lng: sample.lng,
-      acc: sample.acc,
-      speed: sample.speed,
-      heading: sample.heading,
-      ts: Date.now(),
-    });
+  async publishLocation(sample) {
+    this.lastSample = sample;
+    this.publish(
+      await encryptPayload(this.key, {
+        id: this.me.id,
+        nombre: this.me.nombre,
+        online: true,
+        lat: sample.lat,
+        lng: sample.lng,
+        acc: sample.acc,
+        speed: sample.speed,
+        heading: sample.heading,
+        ts: Date.now(),
+      })
+    );
   }
 
   publish(payload) {
     if (!this.client) return;
-    this.client.publish(this.selfTopic, JSON.stringify(payload), { qos: 1, retain: true });
+    this.client.publish(this.selfTopic, payload, { qos: 1, retain: true });
+  }
+
+  reconnect() {
+    if (!this.client) return;
+    this.setState("connecting");
+    this.client.end(true);
+    this.client.reconnect();
   }
 
   startStaleWatch() {
