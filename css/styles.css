@@ -188,6 +188,25 @@ p { margin: 0; }
 .row { display: flex; gap: 0.5rem; }
 .row input { flex: 1; }
 .privacy { margin-top: 1rem; font-size: 0.78rem; color: var(--muted); }
+.field small.muted { font-size: 0.72rem; }
+.btn-danger { background: rgba(248, 113, 113, 0.14); border-color: rgba(248, 113, 113, 0.4); color: var(--danger); }
+.btn-danger:hover { background: rgba(248, 113, 113, 0.24); }
+
+.modal-wide { width: min(560px, 100%); max-height: 90vh; overflow-y: auto; }
+.hist-controls { display: flex; flex-wrap: wrap; gap: 0.7rem; align-items: flex-end; margin-top: 1rem; }
+.hist-controls .field { flex: 1; min-width: 150px; }
+.field > span { font-size: 0.72rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.05em; color: var(--muted); }
+.hist-check { display: inline-flex; align-items: center; gap: 0.35rem; font-size: 0.82rem; color: var(--text); padding-bottom: 0.5rem; }
+.hist-actions { display: flex; flex-wrap: wrap; gap: 0.5rem; margin-top: 0.9rem; }
+.hist-stats { margin-top: 0.9rem; font-size: 0.85rem; font-weight: 700; color: var(--muted); }
+.hist-list { display: flex; flex-direction: column; gap: 0.5rem; margin-top: 0.6rem; }
+.hist-item {
+  display: flex; justify-content: space-between; gap: 0.6rem;
+  background: rgba(255, 255, 255, 0.04); border: 1px solid var(--line);
+  border-radius: var(--radius-sm); padding: 0.6rem 0.8rem; font-size: 0.84rem;
+}
+.hist-item b { display: inline-flex; align-items: center; gap: 0.35rem; }
+.hist-item i { width: 10px; height: 10px; border-radius: 50%; background: var(--c); display: inline-block; }
 
 .toasts { position: fixed; right: 1rem; bottom: 1rem; z-index: 1100; display: flex; flex-direction: column; gap: 0.5rem; max-width: min(90vw, 360px); }
 .toast {
