@@ -45,7 +45,7 @@ export class GeoWatcher {
         };
         this.emit({ error: err.code, message: messages[err.code] || err.message });
       },
-      { enableHighAccuracy: true, maximumAge: 2000, timeout: 20000 }
+      { enableHighAccuracy: true, maximumAge: 0, timeout: 15000 }
     );
   }
 
