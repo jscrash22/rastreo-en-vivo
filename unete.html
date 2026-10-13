@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <meta name="description" content="Envía tu ubicación GPS en vivo a quien te está esperando. Rastreo en Vivo." />
+  <title>Enviar ubicación · Rastreo en Vivo</title>
+
+  <meta name="theme-color" content="#0b1020" />
+  <meta name="mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="apple-mobile-web-app-title" content="Enviar ubicación" />
+
+  <link rel="manifest" href="manifest.webmanifest" />
+  <link rel="apple-touch-icon" href="icons/icon-192.png" />
+  <link rel="icon" type="image/svg+xml" href="icons/icon.svg" />
+
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <link rel="stylesheet" href="css/styles.css" />
+</head>
+<body class="guest">
+  <div id="toasts" class="toasts" aria-live="polite"></div>
+
+  <header class="topbar">
+    <div class="brand">
+      <span class="brand-logo">🏃</span>
+      <div class="brand-text">
+        <strong id="gBrandName">Enviar ubicación</strong>
+        <small>el invitado que sale</small>
+      </div>
+    </div>
+    <div class="top-actions">
+      <span id="netPill" class="net-pill is-wait">
+        <span class="net-dot"></span><span id="netText">Conectando…</span>
+      </span>
+      <button id="gSetupBtn" class="btn btn-icon" title="Cambiar nombre o sala">⚙️</button>
+    </div>
+  </header>
+
+  <main class="guest-main">
+    <div id="map" class="guest-map"></div>
+
+    <section class="guest-card" id="guestCard">
+      <div class="g-status" id="gStatus">
+        <span class="g-dot" id="gDot"></span>
+        <strong id="gStatusText">Preparando…</strong>
+      </div>
+
+      <button id="toggleBtn" class="btn btn-primary g-toggle">📡 Empezar a enviar</button>
+
+      <div class="g-metrics">
+        <div><span>Precisión</span><b id="gAcc">—</b></div>
+        <div><span>Velocidad</span><b id="gSpeed">—</b></div>
+        <div><span>Último envío</span><b id="gLast">—</b></div>
+        <div><span>Tú</span><b id="gMine">—</b></div>
+      </div>
+
+      <p class="muted g-watcher" id="gWatcher">👀 Aún nadie te ve…</p>
+      <p class="diag" id="gDiag"></p>
+      <p class="muted g-hint" id="gSala"></p>
+    </section>
+  </main>
+
+  <div id="gSetupModal" class="modal" hidden>
+    <div class="modal-card">
+      <h2>Modo invitado 🏃</h2>
+      <p class="muted">
+        Quien te invitó te dio un <strong>código de sala</strong> (viene ya puesto si abriste el enlace).
+      </p>
+      <form id="gSetupForm" class="form">
+        <div class="field">
+          <label for="gInpNombre">Tu nombre</label>
+          <input id="gInpNombre" name="nombre" type="text" maxlength="18" placeholder="Ej: Sty" />
+        </div>
+        <div class="field">
+          <label for="gInpSala">Código de sala</label>
+          <input id="gInpSala" name="sala" type="text" maxlength="10" placeholder="Ej: AMOR123" required />
+        </div>
+        <button type="submit" class="btn btn-primary btn-block">Guardar</button>
+      </form>
+      <p class="privacy">
+        🔒 Al acceder compartes tu ubicación solo con quien tenga el código de esta sala.
+      </p>
+    </div>
+  </div>
+
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <script src="https://unpkg.com/mqtt@5.10.1/dist/mqtt.min.js"></script>
+  <script type="module" src="js/guest.js"></script>
+</body>
+</html>
