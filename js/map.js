@@ -46,9 +46,38 @@ export class MapView {
       opacity: 0.85,
       lineJoin: "round",
     }).addTo(this.map);
+    this.historyLayer = L.layerGroup().addTo(this.map);
     this.trailPoints = [];
     this.follow = "self";
     this.hasCentered = false;
+  }
+
+  showHistory(series) {
+    this.clearHistory();
+    const all = [];
+    (series || []).forEach((s) => {
+      if (!s.points || s.points.length < 1) return;
+      L.polyline(s.points, {
+        color: s.color,
+        weight: 4,
+        opacity: 0.85,
+        lineJoin: "round",
+      }).addTo(this.historyLayer);
+      const first = s.points[0];
+      const last = s.points[s.points.length - 1];
+      L.circleMarker(first, { radius: 5, color: s.color, weight: 2, fillColor: "#fff", fillOpacity: 1 })
+        .addTo(this.historyLayer)
+        .bindTooltip(`Inicio · ${s.name}`);
+      L.circleMarker(last, { radius: 7, color: s.color, weight: 2, fillColor: s.color, fillOpacity: 1 })
+        .addTo(this.historyLayer)
+        .bindTooltip(`Fin · ${s.name}`);
+      all.push(...s.points);
+    });
+    if (all.length) this.map.fitBounds(L.latLngBounds(all).pad(0.2));
+  }
+
+  clearHistory() {
+    this.historyLayer.clearLayers();
   }
 
   setFollow(mode) {
