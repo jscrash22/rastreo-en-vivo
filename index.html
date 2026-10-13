@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <meta name="description" content="Rastreo en Vivo: comparte tu ubicación GPS en tiempo real con quien tú quieras. Mapa, distancia y sincronización cada segundo." />
+  <title>Rastreo en Vivo · ubicación en tiempo real</title>
+
+  <meta name="theme-color" content="#0b1020" />
+  <meta name="mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="apple-mobile-web-app-title" content="Rastreo en Vivo" />
+
+  <link rel="manifest" href="manifest.webmanifest" />
+  <link rel="apple-touch-icon" href="icons/icon-192.png" />
+  <link rel="icon" type="image/svg+xml" href="icons/icon.svg" />
+
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <link rel="stylesheet" href="css/styles.css" />
+</head>
+<body>
+  <div id="toasts" class="toasts" aria-live="polite"></div>
+
+  <header class="topbar">
+    <div class="brand">
+      <span class="brand-logo">📍</span>
+      <div class="brand-text">
+        <strong>Rastreo en Vivo</strong>
+        <small>ubicación GPS cada segundo</small>
+      </div>
+    </div>
+
+    <div class="top-actions">
+      <button id="shareBtn" class="btn btn-ghost" title="Copiar enlace de la sala">🔗 Invitar</button>
+      <span id="netPill" class="net-pill is-wait">
+        <span class="net-dot"></span><span id="netText">Conectando…</span>
+      </span>
+      <button id="setupBtn" class="btn btn-icon" title="Cambiar nombre o sala">⚙️</button>
+    </div>
+  </header>
+
+  <main class="layout">
+    <section class="panel">
+      <article class="card card-self">
+        <div class="card-head">
+          <span class="avatar" id="selfAvatar">🧑</span>
+          <div>
+            <h2 id="selfName">Tú</h2>
+            <p class="muted" id="selfStatus">Esperando GPS…</p>
+          </div>
+        </div>
+        <dl class="metrics">
+          <div><dt>Coordenadas</dt><dd id="selfCoords">—</dd></div>
+          <div><dt>Precisión</dt><dd id="selfAcc">—</dd></div>
+          <div><dt>Velocidad</dt><dd id="selfSpeed">—</dd></div>
+        </dl>
+      </article>
+
+      <article class="card card-peer" id="peerCard">
+        <div class="card-head">
+          <span class="avatar peer" id="peerAvatar">❤️</span>
+          <div>
+            <h2 id="peerName">Tu pareja</h2>
+            <p class="muted" id="peerStatus">Sin señal todavía…</p>
+          </div>
+        </div>
+        <dl class="metrics">
+          <div><dt>Coordenadas</dt><dd id="peerCoords">—</dd></div>
+          <div><dt>Precisión</dt><dd id="peerAcc">—</dd></div>
+          <div><dt>Actualizado</dt><dd id="peerUpdated">—</dd></div>
+        </dl>
+      </article>
+
+      <article class="card card-distance">
+        <span class="distance-label">Distancia entre ustedes</span>
+        <strong class="distance-value" id="distanceValue">—</strong>
+        <span class="muted" id="distanceHint">Conecten ambos para medir la distancia.</span>
+      </article>
+
+      <div class="actions">
+        <button id="centerSelf" class="btn btn-primary">📍 Centrarme</button>
+        <button id="followPeer" class="btn">❤️ Seguir a pareja</button>
+        <button id="fitBoth" class="btn btn-ghost">🔭 Ver a ambos</button>
+      </div>
+    </section>
+
+    <div class="map-wrap">
+      <div id="map"></div>
+      <div class="map-legend">
+        <span><i style="--c:#22d3ee"></i>Tú</span>
+        <span><i style="--c:#f472b6"></i>Tu pareja</span>
+      </div>
+    </div>
+  </main>
+
+  <div id="setupModal" class="modal" hidden>
+    <div class="modal-card">
+      <h2>Configura tu rastreo</h2>
+      <p class="muted">
+        Creen una <strong>sala</strong> con el mismo código y compartan el enlace.
+        Cada uno verá al otro en el mapa en tiempo real.
+      </p>
+
+      <form id="setupForm" class="form">
+        <div class="field">
+          <label for="inpNombre">Tu nombre</label>
+          <input id="inpNombre" name="nombre" type="text" maxlength="18" placeholder="Ej: Juan" required />
+        </div>
+        <div class="field">
+          <label for="inpSala">Código de sala</label>
+          <div class="row">
+            <input id="inpSala" name="sala" type="text" maxlength="10" placeholder="Ej: AMOR123" required />
+            <button type="button" id="genSala" class="btn btn-ghost">🎲 Generar</button>
+          </div>
+        </div>
+        <button type="submit" class="btn btn-primary btn-block">Empezar a compartir</button>
+      </form>
+
+      <p class="privacy">
+        🔒 Tu ubicación solo se comparte dentro de la sala acordada. Puedes detenerla
+        cerrando la pestaña. Úsala siempre con consentimiento.
+      </p>
+    </div>
+  </div>
+
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <script src="https://unpkg.com/mqtt@5.10.1/dist/mqtt.min.js"></script>
+  <script type="module" src="js/app.js"></script>
+</body>
+</html>
