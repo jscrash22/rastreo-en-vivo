@@ -33,6 +33,7 @@ const state = {
   nearAlert: false,
   wasNear: false,
   lastSavedAt: 0,
+  received: 0,
 };
 
 let realtime;
@@ -69,7 +70,22 @@ function setNetPill(state) {
     error: "Error de red",
   };
   $("#netText").textContent = labels[state] || "…";
+  $("#netPill").title = state.sala ? `Sala ${state.sala}` : "Rastreo en Vivo";
   $("#reconnectBtn").hidden = state === "connected";
+  updateDiag();
+}
+
+function diagText() {
+  const rt = realtime;
+  const hash = rt?.topicHash || "—";
+  const cif = rt?.key ? "cifrado encendido" : "cifrado apagado";
+  return `v${CONFIG.version} · ${cif} · sala ${state.sala || "?"} (${String(hash).slice(0, 12)}) · msgs recibidos ${state.received} · GPS ${state.selfSample ? "sí" : "no"}`;
+}
+
+function updateDiag() {
+  const el = $("#diag");
+  if (!el) return;
+  el.textContent = realtime ? diagText() : "";
 }
 
 function updateWakeBadge(active) {
@@ -241,10 +257,12 @@ function handlePeerMessage(msg) {
     return;
   }
   if (msg.type !== "peer") return;
+  state.received += 1;
   state.peer = msg.data;
   updatePeerUI(msg.data);
   mapView.updatePeer(msg.data);
   saveLastKnown();
+  updateDiag();
 }
 
 function startPublishLoop() {
@@ -261,6 +279,7 @@ function handleGeoSample(sample) {
   updateDistance();
   saveLastKnown();
   History.maybeSave(sample);
+  updateDiag();
   if (realtime?.client?.connected) realtime.publishLocation(sample);
 }
 
@@ -564,6 +583,19 @@ function init() {
     if (!state.sala) $("#inpSala").value = `AMOR${uid(4)}`;
     openSetup();
     toast("Configura tu nombre y sala para empezar.", "info", 6000);
+  }
+
+  if ("serviceWorker" in navigator) {
+    navigator.serviceWorker.register("service-worker.js").then((reg) => {
+      reg.addEventListener("updatefound", () => {
+        const nw = reg.installing;
+        nw?.addEventListener("statechange", () => {
+          if (nw.state === "installed" && navigator.serviceWorker.controller) {
+            toast("🆕 Nueva versión lista — recarga para actualizar", "info", 10000);
+          }
+        });
+      });
+    });
   }
 }
 
