@@ -73,6 +73,7 @@ export class Realtime {
       }
     }
 
+    this.topicHash = topicHash;
     this.base = `${CONFIG.topicBase}/${topicHash}`;
     this.selfTopic = `${this.base}/${id}`;
     this.setState("connecting");
