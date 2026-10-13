@@ -228,6 +228,28 @@ p { margin: 0; }
 @keyframes fade { from { opacity: 0; } to { opacity: 1; } }
 @keyframes slide { from { opacity: 0; transform: translateX(28px); } to { opacity: 1; transform: none; } }
 
+body.guest { height: 100%; overflow: hidden; }
+.guest-main { position: fixed; inset: var(--header-h) 0 0 0; }
+.guest-map { position: absolute; inset: 0; background: #0c1226; }
+.guest-card {
+  position: absolute; left: 12px; right: 12px; bottom: 14px; z-index: 600;
+  background: var(--card); border: 1px solid var(--line); border-radius: var(--radius);
+  padding: 1rem 1.05rem; box-shadow: var(--shadow); backdrop-filter: blur(14px);
+  display: flex; flex-direction: column; gap: 0.7rem;
+}
+.g-status { display: flex; align-items: center; gap: 0.5rem; }
+.g-dot { width: 12px; height: 12px; border-radius: 50%; background: var(--muted); }
+.g-dot.is-on { background: var(--ok); box-shadow: 0 0 0 4px rgba(52, 211, 153, 0.25); animation: pulse 1.6s infinite; }
+.g-status strong { font-size: 1rem; }
+.g-toggle { width: 100%; min-height: 48px; font-size: 1rem; }
+.g-toggle.is-off { background: var(--bg-2); color: var(--text); border-color: var(--line); }
+.g-metrics { display: grid; grid-template-columns: repeat(4, 1fr); gap: 0.5rem; }
+.g-metrics div { background: rgba(255, 255, 255, 0.04); border-radius: var(--radius-sm); padding: 0.45rem 0.6rem; min-width: 0; text-align: center; }
+.g-metrics span { display: block; font-size: 0.62rem; text-transform: uppercase; letter-spacing: 0.04em; color: var(--muted); }
+.g-metrics b { font-size: 0.82rem; white-space: nowrap; }
+.g-watcher { text-align: center; font-size: 0.84rem; }
+.g-hint { text-align: center; font-size: 0.78rem; }
+
 @media (max-width: 880px) {
   .layout { grid-template-columns: 1fr; height: auto; }
   .map-wrap { height: 54vh; order: -1; }
