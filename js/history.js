@@ -4,7 +4,7 @@ import { encryptPayload, decryptPayload } from "./secure.js";
 
 const LS_URL = "rastreo.firebaseUrl";
 
-const ctx = { topicHash: null, key: null, selfId: null, selfName: "" };
+const ctx = { topicHash: null, key: null, selfId: null, selfName: "", saveSelf: true };
 let lastSaveTs = 0;
 let lastSavedPoint = null;
 
@@ -92,6 +92,7 @@ export async function testConnection() {
 }
 
 export async function maybeSave(sample) {
+  if (!ctx.saveSelf) return;
   if (!enabled() || !ctx.topicHash || typeof sample.lat !== "number") return;
   const now = Date.now();
   if (now - lastSaveTs < CONFIG.histMs) return;
