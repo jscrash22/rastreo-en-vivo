@@ -57,9 +57,10 @@ export class Realtime {
     this.statusHandlers.forEach((handler) => handler(current));
   }
 
-  async connect({ sala, id, nombre }) {
+  async connect({ sala, id, nombre, role = "guest" }) {
     this.sala = sala;
-    this.me = { id, nombre };
+    this.role = role;
+    this.me = { id, nombre, role };
     this.key = null;
 
     let topicHash = sala.toLowerCase();
@@ -83,6 +84,7 @@ export class Realtime {
     const willPayload = await encryptPayload(this.key, {
       id,
       nombre,
+      role,
       online: false,
       ts: Date.now(),
     });
@@ -132,6 +134,7 @@ export class Realtime {
       await encryptPayload(this.key, {
         id: this.me.id,
         nombre: this.me.nombre,
+        role: this.role,
         online,
         ts: Date.now(),
       })
@@ -144,6 +147,7 @@ export class Realtime {
       await encryptPayload(this.key, {
         id: this.me.id,
         nombre: this.me.nombre,
+        role: this.role,
         online: true,
         lat: sample.lat,
         lng: sample.lng,
