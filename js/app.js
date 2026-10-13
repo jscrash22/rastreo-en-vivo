@@ -11,6 +11,7 @@ import { Realtime } from "./realtime.js";
 import { GeoWatcher } from "./geo.js";
 import { MapView } from "./map.js";
 import { getRoute, formatDuration } from "./route.js";
+import { History } from "./history.js";
 
 const LS = {
   nombre: "rastreo.nombre",
@@ -259,6 +260,7 @@ function handleGeoSample(sample) {
   mapView.updateSelf(sample);
   updateDistance();
   saveLastKnown();
+  History.maybeSave(sample);
   if (realtime?.client?.connected) realtime.publishLocation(sample);
 }
 
@@ -267,6 +269,12 @@ async function startTracking() {
   realtime.onStatus(({ state: st }) => setNetPill(st));
   realtime.onMessage(handlePeerMessage);
   await realtime.connect({ sala: state.sala, id: state.id, nombre: state.nombre });
+  History.setContext({
+    topicHash: realtime.topicHash,
+    key: realtime.key,
+    selfId: state.id,
+    selfName: state.nombre,
+  });
 
   geo = new GeoWatcher();
   geo.on((payload) => {
@@ -356,12 +364,23 @@ function wireControls() {
   $("#genSala").addEventListener("click", () => {
     $("#inpSala").value = `AMOR${uid(4)}`;
   });
+
+  $("#testFb").addEventListener("click", async () => {
+    History.setFirebaseUrl($("#inpFirebase").value);
+    if (!History.enabled()) {
+      toast("Primero pega la URL de tu Realtime Database.", "warning");
+      return;
+    }
+    const result = await History.testConnection();
+    toast(result.message, result.ok ? "success" : "error", 6000);
+  });
 }
 
 function openSetup() {
   $("#setupModal").hidden = false;
   $("#inpNombre").value = state.nombre;
   $("#inpSala").value = state.sala;
+  $("#inpFirebase").value = History.firebaseUrl();
   $("#inpNombre").focus();
 }
 
@@ -395,6 +414,7 @@ function handleSetupSubmit(event) {
   state.nombre = nombre;
   state.sala = sala;
   saveConfig();
+  History.setFirebaseUrl($("#inpFirebase").value);
   closeSetup();
 
   const url = new URL(location.href);
@@ -417,9 +437,120 @@ function handleSetupSubmit(event) {
   toast(`Sala "${sala}" activa. Comparte el enlace 💌`, "success");
 }
 
+function todayStr() {
+  const d = new Date();
+  const p = (n) => String(n).padStart(2, "0");
+  return `${d.getFullYear()}-${p(d.getMonth() + 1)}-${p(d.getDate())}`;
+}
+
+function groupLabel(id, points) {
+  if (id === state.id) return state.nombre || "Tú";
+  const nombre = points.find((p) => p.nombre)?.nombre;
+  return nombre || "Pareja";
+}
+
+function renderHistory(groups) {
+  const list = $("#histList");
+  const stats = $("#histStats");
+  list.innerHTML = "";
+
+  const wantMine = $("#histMine").checked;
+  const wantPeer = $("#histPeer").checked;
+  const series = [];
+  let totalPoints = 0;
+
+  Object.entries(groups).forEach(([id, points]) => {
+    const mine = id === state.id;
+    if (mine && !wantMine) return;
+    if (!mine && !wantPeer) return;
+    if (!points.length) return;
+
+    const isSelf = mine;
+    const color = isSelf ? CONFIG.colors.self : CONFIG.colors.peer;
+    const name = groupLabel(id, points);
+    series.push({ name, color, points: points.map((p) => [p.lat, p.lng]) });
+
+    const st = History.groupStats(points);
+    totalPoints += st.count;
+    const item = document.createElement("div");
+    item.className = "hist-item";
+    item.innerHTML =
+      `<b><i style="--c:${color}"></i>${name}</b>` +
+      `<span>${st.count} puntos · ${formatDistance(st.meters)}</span>` +
+      `<span class="muted">${formatTime(st.first)} → ${formatTime(st.last)}</span>`;
+    list.appendChild(item);
+  });
+
+  mapView.showHistory(series);
+
+  if (!series.length) {
+    stats.textContent = "No hay recorridos para ese día (o están desmarcados).";
+  } else {
+    stats.textContent = `Día ${$("#histDate").value} · ${series.length} recorrido(s) · ${totalPoints} puntos.`;
+  }
+}
+
+async function viewHistory() {
+  if (!History.enabled()) {
+    toast("Configura primero tu Firebase para guardar historial.", "warning");
+    return;
+  }
+  const date = $("#histDate").value || todayStr();
+  $("#histStats").textContent = "Cargando…";
+  $("#histList").innerHTML = "";
+  try {
+    const groups = await History.loadDay(date);
+    renderHistory(groups);
+  } catch (err) {
+    $("#histStats").textContent = `Error al leer Firebase (${err.message}).`;
+  }
+}
+
+function openHistory() {
+  if (!History.enabled()) {
+    toast("Aún no hay historial. Configura tu Firebase en ⚙️.", "warning", 6000);
+    openSetup();
+    return;
+  }
+  if (!$("#histDate").value) $("#histDate").value = todayStr();
+  $("#histHint").textContent =
+    "Los datos se guardan cifrados: en la consola de Firebase se ven opacos, pero aquí se leen con tu sala.";
+  $("#historyModal").hidden = false;
+  viewHistory();
+}
+
+function wireHistory() {
+  $("#historyBtn").addEventListener("click", openHistory);
+  $("#histView").addEventListener("click", viewHistory);
+  $("#histToday").addEventListener("click", () => {
+    $("#histDate").value = todayStr();
+    viewHistory();
+  });
+  $("#histMine").addEventListener("change", viewHistory);
+  $("#histPeer").addEventListener("change", viewHistory);
+  $("#histDelete").addEventListener("click", async () => {
+    const date = $("#histDate").value;
+    if (!date) return;
+    if (!confirm(`¿Borrar el recorrido del ${date}? Esta acción no se puede deshacer.`)) return;
+    try {
+      await History.removeDay(date);
+      toast(`Día ${date} borrado.`, "success");
+      viewHistory();
+    } catch (err) {
+      toast(`No se pudo borrar (${err.message}).`, "error");
+    }
+  });
+  $("#histClose").addEventListener("click", () => {
+    $("#historyModal").hidden = true;
+    mapView.clearHistory();
+  });
+  $("#histDate").addEventListener("change", viewHistory);
+}
+
 function init() {
   mapView = new MapView("map");
   wireControls();
+  wireHistory();
   readConfig();
   updateNearBtn();
 
