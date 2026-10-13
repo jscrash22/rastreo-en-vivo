@@ -1,12 +1,14 @@
-const VERSION = "rastreo-v1.4.1";
+const VERSION = "rastreo-v2.0.0";
 const STATIC_CACHE = `${VERSION}-static`;
 const RUNTIME_CACHE = `${VERSION}-runtime`;
 
 const APP_SHELL = [
   "./index.html",
+  "./unete.html",
   "./manifest.webmanifest",
   "./css/styles.css",
-  "./js/app.js",
+  "./js/monitor.js",
+  "./js/guest.js",
   "./js/config.js",
   "./js/utils.js",
   "./js/realtime.js",
