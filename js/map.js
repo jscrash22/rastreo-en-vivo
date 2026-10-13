@@ -87,7 +87,7 @@ export class MapView {
   updateSelf(sample) {
     const latlng = [sample.lat, sample.lng];
     if (!this.selfMarker) {
-      this.selfMarker = L.marker(latlng, { icon: pinIcon(CONFIG.colors.self, "🧑") }).addTo(this.map);
+      this.selfMarker = L.marker(latlng, { icon: pinIcon(CONFIG.colors.self, "🏠") }).addTo(this.map);
     } else {
       this.selfMarker.setLatLng(latlng);
     }
@@ -113,7 +113,7 @@ export class MapView {
   updatePeer(peer) {
     if (!peer || typeof peer.lat !== "number") return;
     const latlng = [peer.lat, peer.lng];
-    const emoji = peer.online === false ? "💤" : "❤️";
+    const emoji = peer.online === false ? "💤" : "🚶";
     if (!this.peerMarker) {
       this.peerMarker = L.marker(latlng, { icon: pinIcon(CONFIG.colors.peer, emoji) }).addTo(this.map);
     } else {
