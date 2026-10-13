@@ -34,6 +34,18 @@ export class MapView {
       opacity: 0.55,
       dashArray: "2 8",
     }).addTo(this.map);
+    this.straightLine = L.polyline([], {
+      color: CONFIG.colors.peer,
+      weight: 1.5,
+      opacity: 0.35,
+      dashArray: "4 10",
+    }).addTo(this.map);
+    this.routeLine = L.polyline([], {
+      color: "#a855f7",
+      weight: 5,
+      opacity: 0.85,
+      lineJoin: "round",
+    }).addTo(this.map);
     this.trailPoints = [];
     this.follow = "self";
     this.hasCentered = false;
@@ -100,9 +112,26 @@ export class MapView {
     if (this.follow === "peer") this.map.panTo(latlng, { animate: true });
   }
 
+  setStraight(a, b) {
+    const pts =
+      a && b && typeof b.lat === "number"
+        ? [
+            [a.lat, a.lng],
+            [b.lat, b.lng],
+          ]
+        : [];
+    this.straightLine.setLatLngs(pts);
+  }
+
+  setRoute(coords) {
+    this.routeLine.setLatLngs(coords && coords.length ? coords : []);
+  }
+
   clearTrail() {
     this.trailPoints = [];
     this.peerTrail.setLatLngs([]);
+    this.straightLine.setLatLngs([]);
+    this.routeLine.setLatLngs([]);
   }
 
   fitBoth(selfSample, peer) {
