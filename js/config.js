@@ -6,6 +6,8 @@ export const CONFIG = {
   nearMs: 150,
   nearResetMs: 300,
   routeRefreshMs: 8000,
+  histMs: 30000,
+  histMinMove: 25,
   defaultCenter: { lat: -2.170998, lng: -79.922359, zoom: 12 },
   colors: {
     self: "#22d3ee",
