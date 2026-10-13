@@ -1,4 +1,5 @@
 export const CONFIG = {
+  version: "1.4.1",
   brokerUrl: "wss://broker.emqx.io:8084/mqtt",
   topicBase: "rastreo-live/v1",
   publishIntervalMs: 1000,
